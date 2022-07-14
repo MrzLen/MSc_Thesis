@@ -1,4 +1,5 @@
 import numpy as np 
+import matplotlib.pyplot as plt
 
 def kern(x1, x2, epsilon = 0.001): #kernel, use Wendland covariance as an example 
         return np.max(1 - np.abs(x1 - x2)/epsilon, 0)**4 * (4*np.abs(x1 - x2)/epsilon + 1)
@@ -11,9 +12,9 @@ class PMM:
         self.b = b
         self.A = A
         self.B = B
-        self.d1 = d1
+        self.d1 = d1  #domain for pde
         self.d2 = d2
-        self.D1 = D1
+        self.D1 = D1  #domain for boundary 
         self.D2 = D2
 
     def X_0A(self, mA):
@@ -31,7 +32,7 @@ class PMM:
     '''
     def A_hat(self):
         return 
-
+    
     def B_hat(self):
         return 
 
@@ -43,6 +44,7 @@ class PMM:
     '''
 
 
+
     def K(X, Y):  #X, T are both list 
         output = np.zeros((len(X), len(Y)))
         for i in range(len(X)):
@@ -51,6 +53,29 @@ class PMM:
 
         return output 
 
-    def posterior():
-        
+    def posterior(self, X):
+        L_hat_K = np.concatenate(self.A(self.K(X, self.X_0A)), self.B(self.K(X, self.X_0B)))
+        L_K = np.concatenate((self.A(self.K(self.X_0A, X)), self.B(self.K(self.X_0B, X))), axis = 1)
+
+        L_L_hat_K = np.bmat([[self.A(self.A_hat(self.K(self.X_0A, self.X_0A))), 
+                            self.A(self.B_hat(self.K(self.X_0A, self.X_0B)))], 
+                            [self.B(self.A_hat(self.K(self.X_0B, self.X_0A))),
+                            self.B(self.B_hat(self.K(self.X_0B, self.X_0A)))]])
+
+        latter = np.concatenate((self.g_matrix, self.b_matrix), axis=1).T
+
+        middle = np.linalg.inv(L_L_hat_K)
+
+        mean = np.matmul(np.matmul(L_hat_K, middle), latter)
+        var = self.K(X, X)  - np.matmul(np.matmul(L_hat_K, middle), L_K)
+
+        return mean, var 
+
+    #plots for mean 
+    def mean_plot(self):
+        plt.plot(np.linspace(self.d1, self.d2), self.mean)
+
+
+
+
 
