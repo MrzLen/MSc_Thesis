@@ -44,7 +44,7 @@ class PMM:
         return [self.D1 + i*(self.D2 - self.D1)/mB for i in range(1, mB)]
 
     def g_matrix(self, mA):
-        return np.array([self.X_0A]).T
+        return np.array([self.X_0A(mA)]).T
 
     def b_matrix(self):
         return np.array([self.X_0B]).T 
