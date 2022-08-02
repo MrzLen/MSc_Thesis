@@ -1,21 +1,41 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 
-def kern(x1, x2, epsilon = 0.001): #kernel, use Wendland covariance as an example 
+def Wendland_kern(x1, x2, epsilon = 0.001): #kernel, use Wendland covariance as an example 
         return np.max(1 - np.abs(x1 - x2)/epsilon, 0)**4 * (4*np.abs(x1 - x2)/epsilon + 1)
 
-    
+def gauss_kernel(x1, x2, L= 0.5):
+    return np.exp(-(x1-x2)**2 / (2* L**2))
+
+def gauss_kernel_deri1(x1, x2, L = 0.5):
+    return np.exp(-(x1-x2)**2 / (2* L**2)) * (- (x1 - x2) / L**2)
+
+def gauss_kernel_deri2(x1, x2, L = 0.5):
+    return np.exp(-(x1-x2)**2 / (2* L**2)) * (1/ L**4) * ((x1-x2)**2  - L**2)
+
+def gauss_kernel_deri2_hat(x1, x2, L = 0.5):
+    return gauss_kernel_deri2(x1, x2, L) 
+
+g =  lambda x: np.cos(2*np.pi*x)
+b = lambda x: x 
+
+d1, d2 = 0, 1
+D1, D2 = 0, 1
+
 class PMM:
     
-    def __init__(self, g, b, A, B, d1, d2, D1, D2): #g, b are functions 
+    def __init__(self, g, b, A, B, A_hat, B_hat, d1, d2, D1, D2, kern): #g, b are functions 
         self.g = g
         self.b = b
         self.A = A
         self.B = B
+        self.A_hat = A_hat
+        self.B_hat = B_hat
         self.d1 = d1  #domain for pde
         self.d2 = d2
         self.D1 = D1  #domain for boundary 
         self.D2 = D2
+        self.kern = kern 
 
     def X_0A(self, mA):
         return [self.d1 + i*(self.d2 - self.d1)/mA for i in range(1, mA)]
@@ -23,33 +43,18 @@ class PMM:
     def X_0B(self, mB):
         return [self.D1 + i*(self.D2 - self.D1)/mB for i in range(1, mB)]
 
-    def g_matrix(self):
+    def g_matrix(self, mA):
         return np.array([self.X_0A]).T
 
     def b_matrix(self):
         return np.array([self.X_0B]).T 
 
-    '''
-    def A_hat(self):
-        return 
-    
-    def B_hat(self):
-        return 
 
-    def L(self):
-        return 
-
-    def L_hat():
-        return 
-    '''
-
-
-
-    def K(X, Y):  #X, T are both list 
+    def K(self, X, Y):  #X, T are both list 
         output = np.zeros((len(X), len(Y)))
         for i in range(len(X)):
             for j in range(len(Y)):
-                output[i-1][j-1] = kern(X[i], Y[j])
+                output[i-1][j-1] = self.kern(X[i], Y[j]) 
 
         return output 
 
