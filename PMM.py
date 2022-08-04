@@ -1,4 +1,6 @@
 ########################################
+import numpy as np 
+
 class PMM:
 
     def __init__(self, g, b, AK, BK, A_hat_K, B_hat_K, d1, d2, D, kern, AA_hat_K, AB_hat_K, BA_hat_K, BB_hat_K): #g, b are functions 
