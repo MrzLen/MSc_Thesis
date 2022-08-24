@@ -53,53 +53,10 @@ class PMM:
 
         latter = np.hstack((self.g_matrix(mA).T, self.b_matrix(mB).T)).T
 
-        middle = np.linalg.inv(LL_hat_K)
+        middle = np.linalg.pinv(LL_hat_K)
 
         mean = np.matmul(np.matmul(L_hat_K, middle), latter)
         var = self.Gram(X, X, self.kern)  - np.matmul(np.matmul(L_hat_K, middle), LK)
 
         return mean, var 
 
-
-##########################
-'''
-import numpy as np 
-import matplotlib.pyplot as plt
-import pandas as pd
-from scipy.stats import multivariate_normal
-
-def real_u(x):
-    return  (1/ (2* np.pi**2))*((np.sin(np.pi * x))**2)
-
-def Wendland_kern(x1, x2, epsilon = 0.001): #kernel, use Wendland covariance as an example 
-        return np.max(1 - np.abs(x1 - x2)/epsilon, 0)**4 * (4*np.abs(x1 - x2)/epsilon + 1)
-
-def gauss_kernel(x1, x2, L=0.25):
-    return np.exp(- (x1-x2)**2 / (2* L**2))
-
-def gauss_kernel_derix(x1, x2, L=0.25):
-    return np.exp(-(x1-x2)**2 / (2* L**2)) * (-(x1 - x2) / L**2)
-
-def gauss_kernel_deriy(x1, x2, L=0.25):
-    return np.exp(-(x1-x2)**2 / (2* L**2)) * ((x1 - x2) / L**2)
-
-def gauss_kernel_derixy(x1, x2, L=0.25):
-    return np.exp(-(x1-x2)**2 / (2* L**2)) * (1/ L**4) * (-(x1-x2)**2  + L**2)
-
-def gauss_kernel_derixx(x1, x2, L=0.25): #This is A operator 
-    return np.exp(-(x1-x2)**2 / (2* L**2)) * (1/ L**4) * ((x1-x2)**2  - L**2)
-
-def gauss_kernel_deriyy(x1, x2, L=0.25): #This is A_hat operator 
-    return gauss_kernel_derixx(x1, x2, L) 
-
-#AA_hat operator
-def gauss_kernel_derixxyy(x1, x2, L=0.25):
-    return np.exp(-(x1-x2)**2 / (2* L**2)) * (1/ L**8) *(3* (L**4) - 6* (L**2)*((x1-x2)**2) + (x1-x2)**4)
-
-g1 =  lambda x: np.cos(2*np.pi*x)
-b1 = lambda x: 0
-
-d1, d2 = 0, 1
-D = [0, 1]
-
-'''
