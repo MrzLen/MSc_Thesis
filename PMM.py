@@ -54,6 +54,7 @@ class PMM:
         latter = np.hstack((self.g_matrix(mA).T, self.b_matrix(mB).T)).T
 
         middle = np.linalg.pinv(LL_hat_K)
+        #middle = np.linalg.inv(LL_hat_K)
 
         mean = np.matmul(np.matmul(L_hat_K, middle), latter)
         var = self.Gram(X, X, self.kern)  - np.matmul(np.matmul(L_hat_K, middle), LK)
